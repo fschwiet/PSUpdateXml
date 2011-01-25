@@ -1,6 +1,10 @@
 WHEN:
 
-set-xml "//root/document/@id" "world"
+param($xmlFile)
+
+update-xml $xmlFile {
+    set-xml "//root/document/@id" "world"
+}
 
 GIVEN:
 <root>

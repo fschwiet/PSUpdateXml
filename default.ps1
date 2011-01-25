@@ -73,21 +73,22 @@ task CheckSpecs -depends Clean {
                 foreach($thenIndex in 1..$thens.length) {
                     $then = $thens[$thenIndex-1];
                     
-                    "  ($givenIndex,$whenIndex,$thenIndex)"
-                    
-                    $specPath = (join-path $buildDirectory "$specName_$givenIndex_$whenIndex_$thenIndex")
+                    $specPath = (join-path $buildDirectory "$specName.$givenIndex.$whenIndex.$thenIndex")
+                    "  ($givenIndex,$whenIndex,$thenIndex @ $specPath)"
                     
                     $null = mkdir $specPath
 
                     $xmlPath = (join-path $specPath "test.xml")
                     $expectedPath = (join-path $specPath "expected.xml")
+                    $sutPath = (join-path $specPath "test.ps1")
                     
                     $given.lines | set-content $xmlPath
                     $then.lines | set-content $expectedPath
                     
                     $whenExpression = [string]::join("`n", $when.lines)
+                    $when.lines | set-content $sutPath
                     
-                    update-xml $xmlPath $executioncontext.InvokeCommand.NewScriptBlock($whenExpression)
+                    & $sutPath $xmlPath
                     
                     assert-xml-equals $xmlPath $expectedPath
                 }
@@ -95,5 +96,8 @@ task CheckSpecs -depends Clean {
         }
     }
 }
+
+
+
 
 
