@@ -1,0 +1,27 @@
+Microsoft Visual Studio Solution File, Format Version 7.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlDiffViewApp", "XmlDiffViewApp\XmlDiffViewApp.csproj", "{E3468618-6C2E-4D18-B620-E85C266C8D6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlDiffView", "XmlDiffView\XmlDiffView.csproj", "{694D8B35-E80F-4DAF-B454-6BB992630ECA}"
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		ConfigName.0 = Debug
+		ConfigName.1 = Release
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{E3468618-6C2E-4D18-B620-E85C266C8D6B}.Debug.ActiveCfg = Debug|.NET
+		{E3468618-6C2E-4D18-B620-E85C266C8D6B}.Debug.Build.0 = Debug|.NET
+		{E3468618-6C2E-4D18-B620-E85C266C8D6B}.Release.ActiveCfg = Release|.NET
+		{E3468618-6C2E-4D18-B620-E85C266C8D6B}.Release.Build.0 = Release|.NET
+		{694D8B35-E80F-4DAF-B454-6BB992630ECA}.Debug.ActiveCfg = Debug|.NET
+		{694D8B35-E80F-4DAF-B454-6BB992630ECA}.Debug.Build.0 = Debug|.NET
+		{694D8B35-E80F-4DAF-B454-6BB992630ECA}.Release.ActiveCfg = Release|.NET
+		{694D8B35-E80F-4DAF-B454-6BB992630ECA}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
