@@ -3,8 +3,9 @@ properties {
     $buildDirectory = ".\build"
 }
 
-task default -depends CheckSpecs
+import-module .\PSUpdateXml.psm1
 
+task default -depends CheckSpecs
 
 function assert-xml-equals([System.IO.FileInfo]$file1, [System.IO.FileInfo]$file2) {
 
@@ -14,8 +15,6 @@ function assert-xml-equals([System.IO.FileInfo]$file1, [System.IO.FileInfo]$file
     $comparisonResult = & .\tools\XmlDiffPatch\Bin\XmlDiff.exe $f1 $f2
     
     Assert ($comparisonResult -like "*Files are identical*") "Expected XML files to equal, there were different.  Filesnames: '$f1', '$f2'";
-    
-    "hi"
 }
 
 task Clean {
@@ -83,7 +82,7 @@ task CheckSpecs -depends Clean {
                     $xmlPath = (join-path $specPath "test.xml")
                     $expectedPath = (join-path $specPath "expected.xml")
                     
-                    $givens.lines | set-content $xmlPath
+                    $given.lines | set-content $xmlPath
                     $then.lines | set-content $expectedPath
                     
                     $whenExpression = [string]::join("`n", $when.lines)
