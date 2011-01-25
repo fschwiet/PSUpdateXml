@@ -1,8 +1,6 @@
 WHEN:
 
-update-xml .\input.xml {
-    set-xml "//root/document/@id" "world"
-}
+set-xml "//root/document/@id" "world"
 
 GIVEN:
 <root>
