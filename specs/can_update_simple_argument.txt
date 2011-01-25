@@ -1,0 +1,17 @@
+WHEN:
+
+update-xml .\input.xml {
+    set-xml "//root/document/@id" "world"
+}
+
+GIVEN:
+<root>
+    <document id="hello">
+    </document>
+</root>
+
+THEN:
+<root>
+    <document id="world">
+    </document>
+</root>
