@@ -1,8 +1,6 @@
 
 properties {
-    $t1 = ".\test1.xml"
-    $t2 = ".\test2.xml"
-    $t3 = ".\test3.xml"
+    $buildDirectory = ".\build"
 }
 
 task default -depends CheckSpecs
@@ -20,8 +18,14 @@ function assert-xml-equals([System.IO.FileInfo]$file1, [System.IO.FileInfo]$file
     "hi"
 }
 
+task Clean {
+    if (test-path $buildDirectory) {
+        rmdir $buildDirectory -recurse -force
+    }
+}
 
-task CheckSpecs {
+
+task CheckSpecs -depends Clean {
 
     gci .\specs\ * | % {
     
@@ -61,22 +65,35 @@ task CheckSpecs {
         $whens = @($blocks | ? { $_.type -eq "when" })
         $thens = @($blocks | ? { $_.type -eq "then" })
         
-        "  givens: $($givens.length), whens: $($whens.length), thens: $($whens.length)"
-        
         foreach($givenIndex in 1..$givens.length) {
-            $given = $givens[$givenIndex];
+            $given = $givens[$givenIndex-1];
             
             foreach($whenIndex in 1..$whens.length) {
-                $when = $whens[$whenIndex];
+                $when = $whens[$whenIndex-1];
                 
                 foreach($thenIndex in 1..$thens.length) {
-                    $then = $thens[$thenIndex];
+                    $then = $thens[$thenIndex-1];
                     
                     "  ($givenIndex,$whenIndex,$thenIndex)"
+                    
+                    $specPath = (join-path $buildDirectory "$specName_$givenIndex_$whenIndex_$thenIndex")
+                    
+                    $null = mkdir $specPath
+
+                    $xmlPath = (join-path $specPath "test.xml")
+                    $expectedPath = (join-path $specPath "expected.xml")
+                    
+                    $givens.lines | set-content $xmlPath
+                    $then.lines | set-content $expectedPath
+                    
+                    $whenExpression = [string]::join("`n", $when.lines)
+                    
+                    update-xml $xmlPath $executioncontext.InvokeCommand.NewScriptBlock($whenExpression)
+                    
+                    assert-xml-equals $xmlPath $expectedPath
                 }
             }
         }
-    
     }
 }
 
