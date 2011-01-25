@@ -14,6 +14,10 @@ function assert-xml-equals([System.IO.FileInfo]$file1, [System.IO.FileInfo]$file
 
     $comparisonResult = & .\tools\XmlDiffPatch\Bin\XmlDiff.exe $f1 $f2
     
+    if (-not ($comparisonResult -like "*Files are identical*")) {
+        diffmerge $f1 $f2
+    }
+    
     Assert ($comparisonResult -like "*Files are identical*") "Expected XML files to equal, there were different.  Filesnames: '$f1', '$f2'";
 }
 

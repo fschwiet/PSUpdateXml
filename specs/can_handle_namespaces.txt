@@ -1,0 +1,39 @@
+WHEN:
+
+param($xmlFile)
+
+update-xml $xmlFile {
+
+    add-xmlnamespace "ns" "http://schemas.microsoft.com/developer/msbuild/2003"
+
+    set-xml "//ns:Reference[@Include='nunit.core']" "<HintPath>c:\program files\nunit 2.5.7\binfolder</HintPath>"
+}
+
+GIVEN:
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Reference Include="nunit.framework">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\NUnit-2.5.9.10348\net-2.0\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.core">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\NUnit-2.5.9.10348\net-2.0\lib\nunit.core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>
+
+THEN:
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Reference Include="nunit.framework">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\NUnit-2.5.9.10348\net-2.0\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.core">
+      <HintPath>c:\program files\nunit 2.5.7\binfolder</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

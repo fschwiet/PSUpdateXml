@@ -1,0 +1,23 @@
+WHEN:
+
+param($xmlFile)
+
+update-xml $xmlFile {
+    $newName = get-xml "//root/articleServer"
+    
+    Assert ($newName.GetType() -eq [string]) "expected get-xml to return a string."
+    set-xml "//root/document" $newName
+}
+
+GIVEN:
+<root>
+    <articleServer><a src=".">new stuff!</a></articleServer>
+    <document id="frontPage">
+    </document>
+</root>
+
+THEN:
+<root>
+    <articleServer><a src=".">new stuff!</a></articleServer>
+    <document id="frontPage"><a src=".">new stuff!</a></document>
+</root>

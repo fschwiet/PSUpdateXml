@@ -1,0 +1,27 @@
+WHEN:
+
+param($xmlFile)
+
+update-xml $xmlFile {
+
+    remove-xml "//document[@id='remarks']"
+}
+
+GIVEN:
+<root>
+    <document id="frontPage" priority="highest">
+    </document>
+    <document id="remarks" priority="highest">
+    </document>
+    <document id="article">
+    </document>
+</root>
+
+THEN:
+<root>
+    <document id="frontPage" priority="highest">
+    </document>
+    <document id="article">
+    </document>
+</root>
+

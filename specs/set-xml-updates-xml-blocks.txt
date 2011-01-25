@@ -1,0 +1,30 @@
+WHEN:
+
+param($xmlFile)
+
+update-xml $xmlFile {
+    set-xml "//root/document/heading" "world"
+}
+
+GIVEN:
+<root>
+    <document>
+        <heading>
+        </heading>
+    </document>
+</root>
+
+GIVEN:
+<root>
+    <document>
+        <heading>pre-existing content
+        </heading>
+    </document>
+</root>
+
+THEN:
+<root>
+    <document>
+        <heading>world</heading>
+    </document>
+</root>

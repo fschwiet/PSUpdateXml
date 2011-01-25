@@ -1,0 +1,25 @@
+WHEN:
+
+param($xmlFile)
+
+update-xml $xmlFile {
+    $newName = get-xml "//root/nameServer/@next"
+    
+    Assert ($newName.GetType() -eq [string]) "expected get-xml to return a string."
+   
+    set-xml "//root/document/@id" $newName
+}
+
+GIVEN:
+<root>
+    <nameServer next="world"/>
+    <document id="hello">
+    </document>
+</root>
+
+THEN:
+<root>
+    <nameServer next="world"/>
+    <document id="world">
+    </document>
+</root>
