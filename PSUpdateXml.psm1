@@ -31,9 +31,10 @@ function add-xmlnamespace([string] $name, [string] $value) {
     $currentNamespaceManager.AddNamespace( $name, $value);
 }
 
+
 function get-xml([string] $xpath) {
     
-    $nodes = $doc.SelectNodes($xpath, $currentNamespaceManager)
+    $nodes = $currentNode.SelectNodes($xpath, $currentNamespaceManager)
      
     foreach ($node in $nodes) {
         if ($node.NodeType -eq "Element") {
@@ -45,9 +46,10 @@ function get-xml([string] $xpath) {
     }
 }
 
+
 function set-xml([string] $xpath, [string] $value) {
 
-    $nodes = $doc.SelectNodes($xpath, $currentNamespaceManager)
+    $nodes = $currentNode.SelectNodes($xpath, $currentNamespaceManager)
      
     foreach ($node in $nodes) {
         if ($node.NodeType -eq "Element") {
@@ -59,8 +61,10 @@ function set-xml([string] $xpath, [string] $value) {
     }
 }
 
+
 function remove-xml([string] $xpath) {
-    $nodes = $doc.SelectNodes($xpath)
+
+    $nodes = $currentNode.SelectNodes($xpath)
      
     foreach($node in $nodes) {
         $nav = $node.CreateNavigator();
@@ -69,6 +73,24 @@ function remove-xml([string] $xpath) {
 }
 
 
-export-modulemember -function update-xml,add-xmlnamespace,get-xml,set-xml,remove-xml
+function for-xml([string] $xpath, [ScriptBlock] $action) {
+
+    $originalNode = $currentNode
+    
+    try {
+        $nodes = $currentNode.SelectNodes($xpath)
+
+        foreach($node in $nodes) {
+            $currentNode = $node;
+            & $action;
+        }
+
+    } finally {
+        $currentNode = $originalNode
+    }
+}
+
+
+export-modulemember -function update-xml,add-xmlnamespace,get-xml,set-xml,remove-xml,for-xml
 
 

@@ -1,0 +1,67 @@
+WHEN:
+
+param($xmlFile)
+
+update-xml $xmlFile {
+
+    $values = @{
+        DatabaseConnection = "superserver:80"
+        DebugMode = "false"
+    }
+
+    for-xml "//applicationSettings/*/setting" {
+        
+        $settingName = get-xml "@name"
+        
+        if ($values[$settingName]) {
+            set-xml "./value" $values[$settingName]
+        }
+    }
+
+    # this remove-xml is to ensure the current XML node is reverted after for-xml
+    remove-xml "./configuration/andMore"
+}
+
+GIVEN:
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <applicationSettings>
+        <HelloWorld.Properties.Settings>
+            <setting name="SiteName" serializeAs="String">
+                <value>Hello, world</value>
+            </setting>
+            <setting name="DatabaseConnection" serializeAs="String">
+                <value>localhost:8080</value>
+            </setting>
+            <setting name="BaseUrl" serializeAs="String">
+                <value>http://HelloWold.com</value>
+            </setting>
+            <setting name="DebugMode" serializeAs="String">
+                <value>true</value>
+            </setting>
+        </HelloWorld.Properties.Settings>
+    </applicationSettings>
+    <andMore/>
+</configuration>
+
+THEN:
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <applicationSettings>
+        <HelloWorld.Properties.Settings>
+            <setting name="SiteName" serializeAs="String">
+                <value>Hello, world</value>
+            </setting>
+            <setting name="DatabaseConnection" serializeAs="String">
+                <value>superserver:80</value>
+            </setting>
+            <setting name="BaseUrl" serializeAs="String">
+                <value>http://HelloWold.com</value>
+            </setting>
+            <setting name="DebugMode" serializeAs="String">
+                <value>false</value>
+            </setting>
+        </HelloWorld.Properties.Settings>
+    </applicationSettings>
+</configuration>
+

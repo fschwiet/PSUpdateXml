@@ -1,4 +1,3 @@
-for-xml
 
 add support for exactly-once, at-least-once, at-most-once
 
