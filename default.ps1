@@ -30,7 +30,7 @@ task Clean {
 
 task CheckSpecs -depends Clean {
 
-    gci .\specs\ * | % {
+    gci .\specs\ * -rec | ? { -not $_.PSIsContainer } | % {
     
         $specName = $_.name;
         $specFile = $_.fullname;
@@ -40,42 +40,50 @@ task CheckSpecs -depends Clean {
         $script:blocks = @();
         $currentBlock = $null;
         
-        function nextBlock($type) {
+        function nextBlock($blockType) {
             $result = @{
-                type = $type
-                lines = @()
+                blockType = $blockType;
+                lines = @();
             }
             $script:blocks += , $result
             $result
         }
         
+        $regexLineWithComment = "";#"\s*#.*`$"
+        
         switch -file $specFile -regex {
-            "\s*GIVEN:\s*" { 
+            ("^\s*GIVEN:" + $regexLineWithComment) { 
                 $currentBlock = nextBlock "given"
             }
-            "\s*WHEN:\s*" { 
+            ("^\s*WHEN:" + $regexLineWithComment) { 
                 $currentBlock = nextBlock "when"
             }
-            "\s*THEN:\s*" { 
+            ("^\s*THEN:" + $regexLineWithComment) { 
                 $currentBlock = nextBlock "then"
             }
+            ("^\s*THEN-ERROR-CONTAINS:" + $regexLineWithComment) { 
+                $currentBlock = nextBlock "then-error-contains"
+            }
             default {
-                $currentBlock.lines += $_
+                if ($currentBlock) {
+                    $currentBlock.lines += $_
+                }
             }
         }
         
-        $givens = @($blocks | ? { $_.type -eq "given" })
-        $whens = @($blocks | ? { $_.type -eq "when" })
-        $thens = @($blocks | ? { $_.type -eq "then" })
+        $givens = @($blocks | ? { $_.blockType -eq "given" })
+        $whens = @($blocks | ? { $_.blockType -eq "when" })
+        $thens = @($blocks | ? { $_.blockType -eq "then" })
+        $expectedErrors = @($blocks | ? { $_.blockType -eq "then-error-contains" })
         
-        foreach($givenIndex in 1..$givens.length) {
-            $given = $givens[$givenIndex-1];
+        for($givenIndex = 0; $givenIndex -lt $givens.length; $givenIndex++) {
+            $given = $givens[$givenIndex];
             
-            foreach($whenIndex in 1..$whens.length) {
-                $when = $whens[$whenIndex-1];
+            for($whenIndex = 0; $whenIndex -lt $whens.length; $whenIndex++) {
+                $when = $whens[$whenIndex];
                 
-                foreach($thenIndex in 1..$thens.length) {
-                    $then = $thens[$thenIndex-1];
+                for($thenIndex = 0; $thenIndex -lt $thens.length; $thenIndex++) {
+                    $then = $thens[$thenIndex];
                     
                     $specPath = (join-path $buildDirectory "$specName.$givenIndex.$whenIndex.$thenIndex")
                     "  ($givenIndex,$whenIndex,$thenIndex @ $specPath)"
@@ -89,12 +97,48 @@ task CheckSpecs -depends Clean {
                     $given.lines | set-content $xmlPath
                     $then.lines | set-content $expectedPath
                     
-                    $whenExpression = [string]::join("`n", $when.lines)
+                    $whenExpression = [string]::Join("`n", @($when.lines))
                     $when.lines | set-content $sutPath
                     
                     & $sutPath $xmlPath
                     
                     assert-xml-equals $xmlPath $expectedPath
+                }
+                
+                for($expectedErrorsIndex = 0; $expectedErrorsIndex -lt $expectedErrors.length; $expectedErrorsIndex++) {
+                
+                    $stringsToCheck = $expectedErrors[$expectedErrorsIndex].lines;
+                
+                    $specPath = (join-path $buildDirectory "$specName.$givenIndex.$whenIndex.error$expectedErrorsIndex")
+                    "  ($givenIndex,$whenIndex,error $expectedErrorsIndex @ $specPath)"
+                
+                    $null = mkdir $specPath
+
+                    $xmlPath = (join-path $specPath "test.xml")
+                    $sutPath = (join-path $specPath "test.ps1")
+                    
+                    $given.lines | set-content $xmlPath
+                    
+                    $whenExpression = [string]::Join("`n", @($when.lines))
+                    $when.lines | set-content $sutPath
+                    
+                    $sawError = $false;
+                    try {
+                    
+                        & $sutPath $xmlPath
+                        
+                    } catch {
+                    
+                        $sawError = $true;
+
+                        $errorString = $_.Exception.Message;
+                        
+                        foreach($expectedString in $stringsToCheck) {
+                            Assert $errorString.Contains($expectedString) "Did not find string '$expectedString'.  Actual error was: $errorString"
+                        }
+                    }
+
+                    Assert $sawError "Expected an error to be thrown, none was."
                 }
             }
         }

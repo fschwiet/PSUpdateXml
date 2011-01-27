@@ -2,17 +2,9 @@
 $currentNamespaceManager = $null;
 $currentNode = $null;
 
-function with-current-node($node, $action) {
-    $originalNode = $currentNode
-    $currentNode = node
-    try {
-        $action
-    } finally {
-        $currentNode = $originalNode
-    }
-}
 
-function update-xml([System.IO.FileInfo]$xmlFile, [ScriptBlock]$action) {
+function update-xml([System.IO.FileInfo]$xmlFile, 
+    [ScriptBlock]$action) {
 
     $doc = New-Object System.Xml.XmlDocument
     $currentNamespaceManager = New-Object System.Xml.XmlNamespaceManager $doc.NameTable
@@ -31,10 +23,17 @@ function add-xmlnamespace([string] $name, [string] $value) {
     $currentNamespaceManager.AddNamespace( $name, $value);
 }
 
+function check-quantifier-against-nodes($nodes, $exactlyonce,  $atleastonce,  $atmostonce) {
+    
+    if ($exactlyonce) {
+        Assert ($nodes.length -eq 1) "Expected to find one match, actually found $($nodes.length) matches for xpath expression `"$xpath`"."
+    }
+}
+
 
 function get-xml([string] $xpath) {
     
-    $nodes = $currentNode.SelectNodes($xpath, $currentNamespaceManager)
+    $nodes = @($currentNode.SelectNodes($xpath, $currentNamespaceManager))
      
     foreach ($node in $nodes) {
         if ($node.NodeType -eq "Element") {
@@ -46,10 +45,16 @@ function get-xml([string] $xpath) {
     }
 }
 
+function set-xml(
+    [string] $xpath, 
+    [string] $value, 
+    [switch]$exactlyonce = $false, 
+    [switch]$atleastonce = $false, 
+    [switch]$atmostonce = $false) {
 
-function set-xml([string] $xpath, [string] $value) {
-
-    $nodes = $currentNode.SelectNodes($xpath, $currentNamespaceManager)
+    $nodes = @($currentNode.SelectNodes($xpath, $currentNamespaceManager))
+    
+    check-quantifier-against-nodes $nodes $exactlyonce $atleastonce $atmostonce
      
     foreach ($node in $nodes) {
         if ($node.NodeType -eq "Element") {
@@ -62,10 +67,15 @@ function set-xml([string] $xpath, [string] $value) {
 }
 
 
-function remove-xml([string] $xpath) {
+function remove-xml([string] $xpath, 
+    [switch]$exactlyonce = $false, 
+    [switch]$atleastonce = $false, 
+    [switch]$atmostonce = $false) {
 
-    $nodes = $currentNode.SelectNodes($xpath)
+    $nodes = @($currentNode.SelectNodes($xpath))
      
+    check-quantifier-against-nodes $nodes $exactlyonce $atleastonce $atmostonce
+
     foreach($node in $nodes) {
         $nav = $node.CreateNavigator();
         $nav.DeleteSelf();
@@ -73,12 +83,18 @@ function remove-xml([string] $xpath) {
 }
 
 
-function for-xml([string] $xpath, [ScriptBlock] $action) {
+function for-xml([string] $xpath, 
+    [ScriptBlock] $action, 
+    [switch]$exactlyonce = $false, 
+    [switch]$atleastonce = $false, 
+    [switch]$atmostonce = $false) {
 
     $originalNode = $currentNode
     
     try {
-        $nodes = $currentNode.SelectNodes($xpath)
+        $nodes = @($currentNode.SelectNodes($xpath))
+
+        check-quantifier-against-nodes $nodes $exactlyonce $atleastonce $atmostonce
 
         foreach($node in $nodes) {
             $currentNode = $node;

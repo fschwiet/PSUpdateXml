@@ -1,10 +1,34 @@
 WHEN:
 
-param($xmlFile)
+    param($xmlFile)
 
-update-xml $xmlFile {
-    set-xml "//root/document/heading" "world"
-}
+    update-xml $xmlFile {
+        set-xml "//root/document/heading" "world"
+    }
+
+WHEN: # variation using exactlyOnce
+
+    param($xmlFile)
+
+    update-xml $xmlFile {
+        set-xml -exactlyOnce "//root/document/heading" "world"
+    }
+
+WHEN: # variation using atLeastOnce
+
+    param($xmlFile)
+
+    update-xml $xmlFile {
+        set-xml -atLeastOnce "//root/document/heading" "world"
+    }
+
+WHEN: # variation using atMostOnce
+
+    param($xmlFile)
+
+    update-xml $xmlFile {
+        set-xml -atMostOnce "//root/document/heading" "world"
+    }
 
 GIVEN:
 <root>
