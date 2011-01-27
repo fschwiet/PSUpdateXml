@@ -28,6 +28,13 @@ function check-quantifier-against-nodes($nodes, $exactlyonce,  $atleastonce,  $a
     if ($exactlyonce) {
         Assert ($nodes.length -eq 1) "Expected to find one match, actually found $($nodes.length) matches for xpath expression `"$xpath`"."
     }
+    
+    if ($atleastonce) {
+        Assert ($nodes.length -ge 1) "Expected to find at least one match, actually found $($nodes.length) matches for xpath expression `"$xpath`"."
+    }
+    if ($atmostonce) {
+        Assert ($nodes.length -le 1) "Expected to find at most one match, actually found $($nodes.length) matches for xpath expression `"$xpath`"."
+    }
 }
 
 
