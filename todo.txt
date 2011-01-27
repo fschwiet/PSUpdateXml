@@ -1,6 +1,4 @@
 
-add support for exactly-once, at-least-once, at-most-once
-
 add error checking for when the internal functions are called outsied Update-xml
 
 add error checking for when update-xml is called within update-xml
