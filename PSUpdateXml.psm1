@@ -31,10 +31,15 @@ function check-quantifier-against-nodes($nodes, $exactlyonce,  $atleastonce,  $a
 }
 
 
-function get-xml([string] $xpath) {
+function get-xml([string] $xpath, 
+    [switch]$exactlyonce = $false, 
+    [switch]$atleastonce = $false, 
+    [switch]$atmostonce = $false) {
     
     $nodes = @($currentNode.SelectNodes($xpath, $currentNamespaceManager))
      
+    check-quantifier-against-nodes $nodes $exactlyonce $atleastonce $atmostonce
+
     foreach ($node in $nodes) {
         if ($node.NodeType -eq "Element") {
             $node.InnerXml
