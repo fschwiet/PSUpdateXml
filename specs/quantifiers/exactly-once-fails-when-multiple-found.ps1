@@ -27,6 +27,14 @@ WHEN:
     param($xmlFile)
 
     update-xml $xmlFile {
+        append-xml -exactlyOnce "//root/document/heading" "world"
+    }
+    
+WHEN:
+
+    param($xmlFile)
+
+    update-xml $xmlFile {
         for-xml -exactlyOnce "//root/document/heading" {
             
         }

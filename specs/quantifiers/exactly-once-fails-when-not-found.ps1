@@ -12,7 +12,7 @@ WHEN:
 
     update-xml $xmlFile {
         set-xml -exactlyOnce "//root/document/heading" "world"
-    }
+    }    
     
 WHEN:
 
@@ -22,6 +22,14 @@ WHEN:
         remove-xml -exactlyOnce "//root/document/heading"
     }
 
+WHEN:
+
+    param($xmlFile)
+
+    update-xml $xmlFile {
+        append-xml -exactlyOnce "//root/document/heading" "world"
+    }
+    
 WHEN:
 
     param($xmlFile)

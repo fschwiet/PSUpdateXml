@@ -1,0 +1,31 @@
+WHEN:
+
+param($xmlFile)
+
+update-xml $xmlFile {
+
+    append-xml "//root/homepage" "<document id='footer'></document>"
+}
+
+GIVEN:
+<root>
+    <homepage>
+        <document id="frontPage" priority="highest">
+        </document>
+        <document id="article">
+        </document>
+    </homepage>
+</root>
+
+
+THEN:
+<root>
+    <homepage>
+        <document id="frontPage" priority="highest">
+        </document>
+        <document id="article">
+        </document>
+        <document id="footer">
+        </document>
+    </homepage>
+</root>

@@ -87,6 +87,22 @@ function remove-xml([string] $xpath,
     }
 }
 
+function append-xml([string] $xpath, 
+    [string] $value, 
+    [switch]$exactlyonce = $false, 
+    [switch]$atleastonce = $false, 
+    [switch]$atmostonce = $false) {
+
+    $nodes = @($currentNode.SelectNodes($xpath))
+     
+    check-quantifier-against-nodes $nodes $exactlyonce $atleastonce $atmostonce
+
+    foreach($node in $nodes) {
+        $nav = $node.CreateNavigator();
+        $nav.AppendChild($value);
+    }
+}
+
 
 function for-xml([string] $xpath, 
     [ScriptBlock] $action, 
@@ -112,6 +128,6 @@ function for-xml([string] $xpath,
 }
 
 
-export-modulemember -function update-xml,add-xmlnamespace,get-xml,set-xml,remove-xml,for-xml
+export-modulemember -function update-xml,add-xmlnamespace,get-xml,set-xml,remove-xml,append-xml,for-xml
 
 
