@@ -34,7 +34,7 @@ Sample usage (update-xml, set-xml, append-xml):
 
     import-module .\PSUpdateXml.psm1  # this is the only file you need to deploy, everything else in the project path is for testing
 
-	$webConfigFilepath = (join-path (join-path $stagingDirectory "WebAppProjectName") "web.config");
+    $webConfigFilepath = (join-path (join-path $stagingDirectory "WebAppProjectName") "web.config");
 
     cp $webConfigFilepath "$webConfigFilepath.backup"
 
