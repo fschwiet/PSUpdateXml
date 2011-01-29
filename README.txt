@@ -2,6 +2,34 @@ Editing XML from powershell has always seemed harder than it should be.  Maybe I
 
 See the "specs" folder to see specifics on how to use PSUpdateXML.psm1.
 
+  update-xml [System.IO.FileInfo]xmlFile [ScriptBlock]action
+    - Runs $action against $xmlFile.  $action can in turn call set-xml, for-xml, etc to modify that XML file.
+  
+  Every other function is called within the script block passed to update-xml.  All calls taking XPATH expression are interpreted relative the current node.  
+  
+  for-xml [QUANTIFIER] [string]xpath [ScriptBlock]action
+    Iterates over every node matching xpath.  Calls action with the current node as that matching node.
+  
+  set-xml [QUANTIFIER] [string]xpath [string]value
+    Sets the xml tag or attribute value at the xpath location.
+    
+  get-xml [QUANTIFIER] [string]xpath
+    Returns the xml tag or attribute value at the xpath location
+    
+  remove-xml [QUANTIFIER] [string]xpath
+    Removes tags or attributes at the xpath location.
+    
+  append-xml [QUANTIFIER] [string]xpath [string]value
+    Appends the text as XML after the last child of the current node.
+    
+  add-xmlnamespace [string]name [string]value
+    - Allow a namespace be specified in your XPATH expressions
+    - If you can't get your XPATH to match, it may be the namespace..
+    - reference: https://github.com/fschwiet/PSUpdateXml/blob/master/specs/can_handle_namespaces.txt
+
+  QUANTIFIER: optionally use -exactlyOnce, -atLeastOnce, or -atMostOnce
+  
+
 Sample usage (update-xml, set-xml, append-xml):
 
     import-module .\PSUpdateXml.psm1  # this is the only file you need to deploy, everything else in the project path is for testing
@@ -33,3 +61,7 @@ Sample usage (update-xml, set-xml, append-xml):
             set-xml "//configuration/elmah" $deploy.elmahConfiguration
         }
     }
+    
+    
+    
+To run the tests, run .\Psake.ps1 from powershell.
