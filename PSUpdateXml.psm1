@@ -1,4 +1,6 @@
 
+
+
 $license = "`
 Copyright (c) 2010 Frank Schwieterman`
 `
@@ -20,6 +22,9 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE`
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION`
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION`
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.`
+`
+`
+orignal source/documentation: https://github.com/fschwiet/psupdatexml
 ";
 
 
@@ -92,13 +97,20 @@ function set-xml(
     $nodes = @($currentNode.SelectNodes($xpath, $currentNamespaceManager))
     
     check-quantifier-against-nodes $nodes $exactlyonce $atleastonce $atmostonce
-     
+ 
     foreach ($node in $nodes) {
         if ($node.NodeType -eq "Element") {
             $node.InnerXml = $value
         }
         else {
-            $node.Value = $value
+        
+            if ($value) {
+                $node.Value = $value
+            } else {
+                
+                $nav = $node.CreateNavigator();
+                $nav.DeleteSelf();
+            }
         }
     }
 }
@@ -109,7 +121,7 @@ function remove-xml([string] $xpath,
     [switch]$atleastonce = $false, 
     [switch]$atmostonce = $false) {
 
-    $nodes = @($currentNode.SelectNodes($xpath))
+    $nodes = @($currentNode.SelectNodes($xpath, $currentNamespaceManager))
      
     check-quantifier-against-nodes $nodes $exactlyonce $atleastonce $atmostonce
 
