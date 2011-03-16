@@ -30,9 +30,11 @@ task Clean {
 
 task CheckSpecs -depends Clean {
 
-    gci .\specs\ * -rec | ? { -not $_.PSIsContainer } | % {
+    $specsBase = gi .\specs\
+
+    gci $specsBase * -rec | ? { -not $_.PSIsContainer } | % {
     
-        $specName = $_.name;
+        $specName = $_.fullname.Substring($specsBase.fullname.length);
         $specFile = $_.fullname;
         
         "Running spec $specName at $specFile"
