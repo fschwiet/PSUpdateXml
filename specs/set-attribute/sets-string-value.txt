@@ -1,0 +1,26 @@
+WHEN:
+param($xmlFile)
+
+update-xml $xmlFile {
+    for-xml "//root/document" {
+        set-attribute "id" "world"
+    } 
+}
+
+GIVEN:
+<root>
+    <document>
+    </document>
+</root>
+
+GIVEN:
+<root>
+    <document id="hello">
+    </document>
+</root>
+
+THEN:
+<root>
+    <document id="world">
+    </document>
+</root>
