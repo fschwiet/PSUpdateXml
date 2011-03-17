@@ -115,6 +115,17 @@ function set-xml(
     }
 }
 
+function set-attribute(
+    [string] $name,
+    [string] $value) {
+    
+    if ($value) {
+        $currentNode.SetAttribute($name, $value);
+    } else {
+        $currentNode.RemoveAttribute($name);
+    }
+}
+
 
 function remove-xml([string] $xpath, 
     [switch]$exactlyonce = $false, 
@@ -172,6 +183,6 @@ function for-xml([string] $xpath,
 }
 
 
-export-modulemember -function update-xml,add-xmlnamespace,get-xml,set-xml,remove-xml,append-xml,for-xml
+export-modulemember -function update-xml,add-xmlnamespace,get-xml,set-xml,set-attribute,remove-xml,append-xml,for-xml
 
 
