@@ -6,6 +6,7 @@ update-xml $xmlFile {
     $newName = get-xml "//root/nameServer/@next"
     
     Assert ($newName.GetType() -eq [string]) "expected get-xml to return a string."
+    Assert ($newName -eq "world") "expected get-xml to return attribute value."
    
     set-xml "//root/document/@id" $newName
 }
