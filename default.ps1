@@ -5,7 +5,7 @@ properties {
 
 import-module .\PSUpdateXml.psm1
 
-task default -depends CheckSpecs
+task default -depends CheckSpecs,CheckFilesAreProperlyClosed
 
 function assert-xml-equals([System.IO.FileInfo]$file1, [System.IO.FileInfo]$file2) {
 
@@ -148,6 +148,37 @@ task CheckSpecs -depends Clean {
 }
 
 
+task CheckFilesAreProperlyClosed -depends Clean {
+
+    $testDir = (join-path $buildDirectory "CheckFilesAreProperlyClosed")
+    $testFile = (join-path $testDir "some.xml");
+    
+    $null = mkdir $testDir
+    
+    "<doc></doc>" | set-content $testFile
+    
+    update-xml $testFile {
+        set-xml "//doc" "hi"
+    }
+    
+    Assert (-not (IsFileLocked $testFile)) "update-xml left the file locked"
+}
 
 
+function IsFileLocked($filename) {
+
+    $result = $false
+    
+    $fileinfo = [System.IO.FileInfo] (gi $filename).fullname
+
+    try {
+        $stream = $fileInfo.Open([System.IO.FileMode]"Open",[System.IO.FileAccess]"ReadWrite",[System.IO.FileShare]"None")
+        $stream.Dispose()
+    } catch [System.IO.IOException] {
+        #$_ | write-host
+        $result = $true
+    }
+    
+    $result
+}
 
