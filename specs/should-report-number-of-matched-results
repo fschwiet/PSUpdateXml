@@ -1,0 +1,61 @@
+
+
+GIVEN:
+<root>
+    <document>
+        <head></head>
+        <head></head>
+    </document>
+</root>
+
+    
+WHEN:
+
+    param($xmlFile)
+
+    update-xml $xmlFile {
+        Assert ((get-last-xml-count) -eq 0)
+        set-xml "//root/document/head" "world"
+        $result = get-last-xml-count
+        Assert ($result -eq 1) "Expected 1 head, found $result"
+    }
+    
+    
+WHEN:
+
+    param($xmlFile)
+
+    update-xml $xmlFile {
+        Assert ((get-last-xml-count) -eq 0)
+        remove-xml "//root/document/head"
+        $result = get-last-xml-count
+        Assert ($result -eq 1) "Expected 1 head, found $result"
+    }
+
+
+WHEN:
+
+    param($xmlFile)
+
+    update-xml $xmlFile {
+        Assert ((get-last-xml-count) -eq 0)
+        append-xml "//root/document/head" "world"
+        $result = get-last-xml-count
+        Assert ($result -eq 1) "Expected 1 head, found $result"
+    }
+
+    
+WHEN:
+
+    param($xmlFile)
+
+    update-xml $xmlFile {
+        Assert ((get-last-xml-count) -eq 0)
+        for-xml "//root/document/head" { "no-op" }
+        $result = get-last-xml-count
+        Assert ($result -eq 1) "Expected 1 head, found $result"
+    }
+
+
+THEN-ERROR-CONTAINS:
+Expected 1 head, found 2

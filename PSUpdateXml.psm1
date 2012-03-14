@@ -31,6 +31,7 @@ orignal source/documentation: https://github.com/fschwiet/psupdatexml
 
 $currentNamespaceManager = $null;
 $currentNode = $null;
+$script:lastMatchCount = 0;
 
 
 function update-xml([System.IO.FileInfo]$xmlFile, 
@@ -39,7 +40,8 @@ function update-xml([System.IO.FileInfo]$xmlFile,
     $doc = New-Object System.Xml.XmlDocument
     $currentNamespaceManager = New-Object System.Xml.XmlNamespaceManager $doc.NameTable
     $currentNode = $doc
-
+    $script:lastMatchCount = 0
+    
     $xmlFile = (resolve-path $xmlFile).path;
 
     $doc.Load($xmlFile)
@@ -50,6 +52,7 @@ function update-xml([System.IO.FileInfo]$xmlFile,
 }
 
 function add-xmlnamespace([string] $name, [string] $value) {
+
     $currentNamespaceManager.AddNamespace( $name, $value);
 }
 
@@ -113,6 +116,8 @@ function set-xml(
             }
         }
     }
+    
+    $script:lastMatchCount = $nodes.length
 }
 
 function set-attribute(
@@ -140,6 +145,8 @@ function remove-xml([string] $xpath,
         $nav = $node.CreateNavigator();
         $nav.DeleteSelf();
     }
+    
+    $script:lastMatchCount = $nodes.length
 }
 
 function append-xml([string] $xpath, 
@@ -156,6 +163,8 @@ function append-xml([string] $xpath,
         $nav = $node.CreateNavigator();
         $nav.AppendChild($value);
     }
+    
+    $script:lastMatchCount = $nodes.length
 }
 
 
@@ -174,15 +183,21 @@ function for-xml([string] $xpath,
 
         foreach($node in $nodes) {
             $currentNode = $node;
-            & $action;
+            $null = & $action;
         }
 
     } finally {
         $currentNode = $originalNode
     }
+    
+    $script:lastMatchCount = $nodes.length
 }
 
 
-export-modulemember -function update-xml,add-xmlnamespace,get-xml,set-xml,set-attribute,remove-xml,append-xml,for-xml
+function get-last-xml-count {
+    return $script:lastMatchCount
+}
+
+export-modulemember -function update-xml,add-xmlnamespace,get-xml,set-xml,set-attribute,remove-xml,append-xml,for-xml,get-last-xml-count
 
 
