@@ -194,10 +194,10 @@ function for-xml([string] $xpath,
 }
 
 
-function get-last-xml-count {
+function get-lastxmlcount {
     return $script:lastMatchCount
 }
 
-export-modulemember -function update-xml,add-xmlnamespace,get-xml,set-xml,set-attribute,remove-xml,append-xml,for-xml,get-last-xml-count
+export-modulemember -function update-xml,add-xmlnamespace,get-xml,set-xml,set-attribute,remove-xml,append-xml,for-xml,get-lastxmlcount
 
 

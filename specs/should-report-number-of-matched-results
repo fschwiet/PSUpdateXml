@@ -14,9 +14,9 @@ WHEN:
     param($xmlFile)
 
     update-xml $xmlFile {
-        Assert ((get-last-xml-count) -eq 0)
+        Assert ((get-lastxmlcount) -eq 0) "xml count should reset to 0"
         set-xml "//root/document/head" "world"
-        $result = get-last-xml-count
+        $result = get-lastxmlcount
         Assert ($result -eq 1) "Expected 1 head, found $result"
     }
     
@@ -26,9 +26,9 @@ WHEN:
     param($xmlFile)
 
     update-xml $xmlFile {
-        Assert ((get-last-xml-count) -eq 0)
+        Assert ((get-lastxmlcount) -eq 0) "xml count should reset to 0"
         remove-xml "//root/document/head"
-        $result = get-last-xml-count
+        $result = get-lastxmlcount
         Assert ($result -eq 1) "Expected 1 head, found $result"
     }
 
@@ -38,9 +38,9 @@ WHEN:
     param($xmlFile)
 
     update-xml $xmlFile {
-        Assert ((get-last-xml-count) -eq 0)
+        Assert ((get-lastxmlcount) -eq 0) "xml count should reset to 0"
         append-xml "//root/document/head" "world"
-        $result = get-last-xml-count
+        $result = get-lastxmlcount
         Assert ($result -eq 1) "Expected 1 head, found $result"
     }
 
@@ -50,9 +50,9 @@ WHEN:
     param($xmlFile)
 
     update-xml $xmlFile {
-        Assert ((get-last-xml-count) -eq 0)
+        Assert ((get-lastxmlcount) -eq 0) "xml count should reset to 0"
         for-xml "//root/document/head" { "no-op" }
-        $result = get-last-xml-count
+        $result = get-lastxmlcount
         Assert ($result -eq 1) "Expected 1 head, found $result"
     }
 
